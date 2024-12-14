@@ -8,12 +8,12 @@ namespace ConsoleApp8
         {
             Graph graph = new Graph();
             graph.AddEdge(1, 2);
-            graph.AddEdge(1, 3);
-            graph.AddEdge(2, 4);
-            graph.AddEdge(4, 3);
+            graph.AddEdge(2, 3);
+            graph.AddEdge(3, 1);
             DepthTraversal(graph);
             Console.WriteLine();
             WidthTraversal(graph);
+            FindEulerianCycle(graph);
         }
 
         public static void DepthTraversal(Graph graph)
@@ -83,6 +83,40 @@ namespace ConsoleApp8
                 }
             }
 
+        }
+
+        public static void FindEulerianCycle(Graph graph)
+        {
+            List<Vertex> cycle = new List<Vertex>();
+            Stack<Vertex> stack = new Stack<Vertex>();
+            foreach (var v in graph.vertices)
+            {
+                if (v.adjacentVerticies.Count > 0)
+                {
+                    stack.Push(v);
+                    break;
+                }
+            }
+            while (stack.Count > 0)
+            {
+                Vertex currentVertex = stack.Peek();
+                if (currentVertex.adjacentVerticies.Count > 0)
+                {
+                    var nextVertex = currentVertex.adjacentVerticies[0];
+                    stack.Push(nextVertex);
+                    currentVertex.adjacentVerticies.Remove(nextVertex);
+                    nextVertex.adjacentVerticies.Remove(currentVertex);
+                }
+                else
+                {
+                    cycle.Add(stack.Pop());
+                }
+            }
+            cycle.Reverse();
+            foreach (var v in cycle)
+            {
+                Console.WriteLine(v.data);
+            }
         }
     }
     // ----ПРИМЕНЕНИЕ ОБХОДОВ ГРАФОВ----
