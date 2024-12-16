@@ -9,6 +9,7 @@ namespace ConsoleApp8
     public class Vertex
     {
         public int data;
+        public int min_d;
         public List<Vertex> adjacentVerticies = new List<Vertex>();
         public Vertex(int data)
         {

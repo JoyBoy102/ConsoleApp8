@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 
 namespace ConsoleApp8
 {
@@ -8,12 +9,18 @@ namespace ConsoleApp8
         {
             Graph graph = new Graph();
             graph.AddEdge(1, 2);
+            graph.AddEdge(1, 5);
+            graph.AddEdge(1, 4);
+            
+            graph.AddEdge(4, 5);
+            
             graph.AddEdge(2, 3);
-            graph.AddEdge(3, 1);
-            DepthTraversal(graph);
-            Console.WriteLine();
-            WidthTraversal(graph);
-            FindEulerianCycle(graph);
+
+            Dijkstra_alg(graph);
+            foreach (var v in graph.vertices)
+            {
+                Console.WriteLine($"{v.min_d} - {v.data}");
+            }
         }
 
         public static void DepthTraversal(Graph graph)
@@ -116,6 +123,41 @@ namespace ConsoleApp8
             foreach (var v in cycle)
             {
                 Console.WriteLine(v.data);
+            }
+        }
+
+        public static void Dijkstra_alg(Graph graph)
+        {
+            // ----АЛГОРИТМ ДЕЙКСТРЫ----
+            // Данный алгоритм применяется для нахождения наикратчайшего пути от выбранной вершины до всех остальных в графе.
+            // 1. На первом шаге всем вершинам, кроме выбранного, присваивается минимальное расстояние Inf, а выбранному 0.
+            // 2. Затем обрабатываем соседей выбранной вершины, присваивая им новые минимальные расстояния, которые рассчитываются как min(D(Vi), D(Vi)+D(O)), где D(Vi) -
+            // текущее мин. расстояние до соседней вершины, а D(O) - текущее мин.расстояние выбранной вершины
+            // 3. После того, как мин. расстояния обновятся, выбирам ту вершину, до которой ближе всего.
+            // 4. Повторяем шаги 2-3, пока не обработаются все вершины.
+            var priorityQueue = new PriorityQueue<Vertex, int>();
+            List<Vertex> ProcessedVerticies = new List<Vertex>();
+            foreach(var v in graph.vertices)
+            {
+                v.min_d = int.MaxValue;
+            }
+            graph.vertices[0].min_d = 0;
+            priorityQueue.Enqueue(graph.vertices[0], graph.vertices[0].min_d);
+            while (priorityQueue.Count > 0)
+            {
+                var currVertex = priorityQueue.Dequeue();
+                if (!ProcessedVerticies.Contains(currVertex))
+                {
+                    foreach (var vertex in currVertex.adjacentVerticies)
+                    {
+                        if (currVertex.min_d + 1 < vertex.min_d)
+                        {
+                            vertex.min_d = currVertex.min_d + 1;
+                            priorityQueue.Enqueue(vertex, vertex.min_d);
+                        }
+                    }
+                }
+                ProcessedVerticies.Add(currVertex);
             }
         }
     }
